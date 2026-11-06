@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1e1d18">
+<meta name="description" content="Lumen — un puzzle de lumière en 1-bit. Fais pivoter les tuiles pour relier chaque cristal à la source. 60 niveaux, de l'Éveil à la Singularité.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Lumen">
+<meta property="og:title" content="Lumen — puzzle de lumière">
+<meta property="og:description" content="Relie la lumière. 60 niveaux, de facile à very high brain.">
+<meta property="og:type" content="website">
+<title>Lumen — puzzle de lumière</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<main id="app">
+
+  <!-- ============ ACCUEIL ============ -->
+  <section id="home" class="screen active" aria-label="Accueil">
+    <div class="home-inner">
+      <canvas id="logo" class="px" width="48" height="48" aria-hidden="true"></canvas>
+      <h1 class="title">Lumen</h1>
+      <p class="tagline"><i>Relie la lumière. Éveille ton esprit.</i></p>
+
+      <div class="menu">
+        <button class="btn primary" id="btn-play">
+          <span class="btn-main"><i data-ic="play"></i>Jouer</span>
+          <small id="play-sub">Éveil · niveau 1</small>
+        </button>
+        <button class="btn" id="btn-levels"><span class="btn-main"><i data-ic="grid"></i>Niveaux</span></button>
+        <div class="menu-row">
+          <button class="btn" id="btn-help"><span class="btn-main"><i data-ic="help"></i>Règles</span></button>
+          <button class="btn" id="btn-settings"><span class="btn-main"><i data-ic="gear"></i>Réglages</span></button>
+        </div>
+      </div>
+
+      <p class="stars-total"><i data-ic="star"></i><b id="stars-total">0</b> / <span id="stars-max">180</span></p>
+    </div>
+    <footer class="credit"><span>— Lumen · MMXXVI —</span></footer>
+  </section>
+
+  <!-- ============ NIVEAUX ============ -->
+  <section id="levels" class="screen" aria-label="Niveaux">
+    <header class="bar">
+      <button class="ib" data-back aria-label="Retour"><i data-ic="back"></i></button>
+      <h2>Niveaux</h2>
+      <span class="chip"><i data-ic="star"></i><b id="lv-stars">0</b></span>
+    </header>
+    <div class="scroll"><div class="tiers" id="tiers"></div></div>
+  </section>
+
+  <!-- ============ JEU ============ -->
+  <section id="game" class="screen" aria-label="Partie">
+    <header class="bar">
+      <button class="ib" data-back aria-label="Retour"><i data-ic="back"></i></button>
+      <div class="g-title">
+        <small id="g-sub">Éveil · facile</small>
+        <strong id="g-title">Niveau 1</strong>
+      </div>
+      <div class="g-stats">
+        <span title="Coups"><i data-ic="turn"></i><b id="g-moves">0</b></span>
+        <span title="Temps"><i data-ic="clock"></i><b id="g-time">0:00</b></span>
+      </div>
+    </header>
+    <div class="tags" id="g-tags"></div>
+    <div class="board-wrap" id="board-wrap">
+      <div class="board" id="board">
+        <canvas id="cv" class="px" aria-label="Plateau de jeu"></canvas>
+        <div class="pulse" id="pulse"></div>
+        <div class="banner" id="banner" role="status" aria-live="polite">
+          <p class="b-eyebrow" id="b-eyebrow">Niveau 1</p>
+          <p class="b-title" id="b-title">Résolu</p>
+          <div class="b-stars" id="b-stars"></div>
+          <p class="b-stats" id="b-stats">12 coups · 0:21</p>
+          <p class="b-next" id="b-next">Niveau suivant<span class="caret">▮</span></p>
+        </div>
+      </div>
+    </div>
+    <nav class="tools">
+      <button class="tool" id="t-undo" aria-label="Annuler"><i data-ic="undo"></i><span>Annuler</span></button>
+      <button class="tool" id="t-lock" aria-label="Mode verrou"><i data-ic="lock"></i><span>Verrou</span></button>
+      <button class="tool" id="t-hint" aria-label="Indice"><i data-ic="hint"></i><span>Indice</span></button>
+      <button class="tool" id="t-reset" aria-label="Recommencer"><i data-ic="reset"></i><span>Rejouer</span></button>
+    </nav>
+  </section>
+</main>
+
+<!-- ============ MODALE RÈGLES ============ -->
+<div class="modal" id="m-help" role="dialog" aria-modal="true" aria-labelledby="h-title">
+  <div class="card">
+    <p class="eyebrow">Comment jouer</p>
+    <h3 id="h-title">Relie la lumière</h3>
+    <ul class="rules">
+      <li><span class="num">I.</span><div><b>Touche une tuile</b> pour la faire pivoter d'un quart de tour.</div></li>
+      <li><span class="num">II.</span><div>Relie <b>chaque cristal</b> à la <b>source</b>. Aucun conduit ne doit rester ouvert, aucune boucle. Les conduits reliés se remplissent de lumière.</div></li>
+      <li><span class="num">III.</span><div><b>Appui long</b> ou <b>clic droit</b> : verrouille une tuile dont tu es sûr. La tuile se couvre d'une trame.</div></li>
+      <li><span class="num">IV.</span><div><b>Nébuleuse</b> — les bords se rejoignent : ce qui sort à droite revient à gauche.</div></li>
+      <li><span class="num">V.</span><div><b>Singularité</b> — la lumière reste invisible jusqu'à la victoire. Pure logique.</div></li>
+    </ul>
+    <p class="tip"><i>Astuce :</i> commence par les bords et les coins, une tuile n'y a que peu d'orientations possibles. Chaque niveau a <b>une seule solution</b>, trouvable sans deviner.</p>
+    <p class="kbd-hint">Clavier : <kbd>Z</kbd> annuler · <kbd>H</kbd> indice · <kbd>L</kbd> verrou · <kbd>Maj</kbd>+clic tourne à l'envers · <kbd>Espace</kbd> niveau suivant</p>
+    <button class="btn primary full" data-close><span class="btn-main">C'est parti</span></button>
+  </div>
+</div>
+
+<!-- ============ MODALE RÉGLAGES ============ -->
+<div class="modal" id="m-settings" role="dialog" aria-modal="true" aria-labelledby="s-title">
+  <div class="card">
+    <p class="eyebrow">Réglages</p>
+    <h3 id="s-title">Ton univers</h3>
+    <div class="palettes" id="palettes" role="radiogroup" aria-label="Palette"></div>
+    <label class="switch"><span>Sons</span><input type="checkbox" id="s-sound"><i></i></label>
+    <label class="switch"><span>Vibrations <small>Android</small></span><input type="checkbox" id="s-vibe"><i></i></label>
+    <label class="switch"><span>Mode libre <small>tous les niveaux ouverts</small></span><input type="checkbox" id="s-free"><i></i></label>
+    <button class="btn full" id="s-reset"><span class="btn-main">Effacer ma progression</span></button>
+    <button class="btn primary full" data-close><span class="btn-main">Fermer</span></button>
+  </div>
+</div>
+
+<!-- ============ MODALE FIN ============ -->
+<div class="modal" id="m-end" role="dialog" aria-modal="true" aria-labelledby="e-title">
+  <div class="card">
+    <p class="eyebrow">Singularité · niveau 12</p>
+    <h3 id="e-title">Tout est lumière</h3>
+    <p class="tip" id="e-text"></p>
+    <button class="btn primary full" id="e-levels"><span class="btn-main">Voir les niveaux</span></button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/game.js" defer></script>
+</body>
+</html>
